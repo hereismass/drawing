@@ -12,7 +12,23 @@ function DrawingClass(canvas){
 		//we set the canvas width and height at 100%
 		self.ctx.canvas.width  = window.innerWidth;
   		self.ctx.canvas.height = window.innerHeight;
+  		//we init the lines array with data present in localstorage
+  		if(localStorage.getItem('lines')){
+  			self.lines = JSON.parse(localStorage.getItem('lines'));
+  		}
+		//we draw existing lines
+		self.drawFromStorage();
   		self.listeners();
+	}
+
+	this.drawFromStorage = function(){
+		//we draw each line present in the lines array
+		self.ctx.beginPath();
+		for(var i=0;i<self.lines.length;i++){
+			self.ctx.moveTo(self.lines[i].startx, self.lines[i].starty);
+			self.ctx.lineTo(self.lines[i].endx, self.lines[i].endy);
+			self.ctx.stroke();
+		}
 	}
 
 	this.initLine = function(x, y){
@@ -38,6 +54,7 @@ function DrawingClass(canvas){
 			endy : ey
 		};
 		self.lines.push(line);
+		localStorage.setItem('lines', JSON.stringify(self.lines));//we s
 	}
 
 	this.listeners = function(){
