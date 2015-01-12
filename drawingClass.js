@@ -39,14 +39,23 @@ function DrawingClass(canvas){
 	}
 
 	this.drawLine = function(x, y){
-		self.storeLine(self.x, self.y, x, y); //we store the line drawn
+		self.shareLine(self.x, self.y, x, y); //we store the line drawn
 		self.ctx.lineTo(x,y); 
 		self.x = x;
 		self.y = y;
 	    self.ctx.stroke(); //we draw a line between the 2 positions
+
 	}
 
-	this.storeLine = function(sx, sy, ex, ey){
+	this.drawLineFromRTC = function(line){
+		var l = JSON.parse(line);
+		self.ctx.beginPath();
+		self.ctx.moveTo(l.startx, l.starty);
+		self.ctx.lineTo(l.endx, l.endy);	
+		self.ctx.stroke();
+	}
+
+	this.shareLine = function(sx, sy, ex, ey){
 		var line = {
 			startx : sx,
 			starty : sy,
@@ -54,7 +63,8 @@ function DrawingClass(canvas){
 			endy : ey
 		};
 		self.lines.push(line);
-		localStorage.setItem('lines', JSON.stringify(self.lines));//we s
+		self.Communication.sendMessage(JSON.stringify(self.lines));
+		localStorage.setItem('lines', JSON.stringify(self.lines));
 	}
 
 	this.listeners = function(){
@@ -69,7 +79,7 @@ function DrawingClass(canvas){
 	  	});
 	}
 
-	this.Communication = new CommunicationClass(function(){
+	this.Communication = new CommunicationClass(this, function(){
 		self.initialize();
 	});
 	

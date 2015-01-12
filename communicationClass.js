@@ -1,4 +1,4 @@
-function CommunicationClass(cb){
+function CommunicationClass(parent, cb){
 	this.dbRef;
 	this.roomRef;
 	this.PeerConnection;
@@ -10,6 +10,7 @@ function CommunicationClass(cb){
 	this.pc;
 	this.constraints = {};
 	this.channel;
+	this.parent = parent;
   	var self = this;
 
 	this.initialize = function(){
@@ -25,16 +26,19 @@ function CommunicationClass(cb){
 		if(self.room){
 			self.type = "answerer";
 			self.otherType = "offerer";
+			$('#share').hide();
 		}
 		else{
 			self.room = self.createRoomId();
 			self.type = "offerer";
 			self.otherType = "answerer";
+			$('#urlinput').val(location.href + "#" + self.room);
 		}
 
 		//options for peer connection. stun server in case of nat problem or proxy
 		var server = {
 			iceServers: [
+				{url: "stun:23.21.150.121"},
 				{url: "stun:stun.l.google.com:19302"}
 			]
 		};
@@ -85,6 +89,7 @@ function CommunicationClass(cb){
 
 	// start the connection!
 	this.connect = function() {
+		console.log('c');
 		if (self.type === "offerer") {
 			// offerer creates the data channel
 			self.channel = self.pc.createDataChannel("mychannel", {});
@@ -105,6 +110,7 @@ function CommunicationClass(cb){
 		} else {
 			// answerer must wait for the data channel
 			self.pc.ondatachannel = function (e) {
+				console.log('e');
 				self.channel = e.channel;
 				self.listeners(); //now bind the events
 			};
@@ -124,8 +130,7 @@ function CommunicationClass(cb){
 		}
 	}
 
-	this.sendMessage = function() {
-		var msg = "todo"; //todo
+	this.sendMessage = function(msg) {
 		self.channel.send(msg);
 	}
 
@@ -136,9 +141,11 @@ function CommunicationClass(cb){
 	}
 
 	this.listeners = function(){
+		console.log('d');
 		self.channel.onopen = function () { console.log("Channel Open"); }
 		self.channel.onmessage = function (e) {
-			//to do. where we receive info
+			// where we receive info
+			self.parent.drawLineFromRTC(e.data);
 		}
 	}
 

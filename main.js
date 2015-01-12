@@ -1,4 +1,4 @@
+var D;
 $(document).ready(function(){
-  
-	var D = new DrawingClass("content");
+	D = new DrawingClass("content");
 });
