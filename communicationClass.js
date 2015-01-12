@@ -51,16 +51,16 @@ function CommunicationClass(parent, cb){
 		self.pc = new self.PeerConnection(server, options);
 
 
-		self.onicecandidate = function (e) {
+		self.pc.onicecandidate = function (e) {
 			// take the first candidate that isn't null
 			if (!e.candidate) { return; }
 			self.pc.onicecandidate = null;
 			// request the other peers ICE candidate
-			self.recv(self.room, "candidate:" + otherType, function (candidate) {
+			self.recv(self.room, "candidate:" + self.otherType, function (candidate) {
 				self.pc.addIceCandidate(new self.IceCandidate(JSON.parse(candidate)));
 			});
 			// send our ICE candidate
-			self.send(self.room, "candidate:"+type, JSON.stringify(e.candidate));
+			self.send(self.room, "candidate:"+self.type, JSON.stringify(e.candidate));
 		};
 
 		self.connect();
@@ -131,6 +131,7 @@ function CommunicationClass(parent, cb){
 	}
 
 	this.sendMessage = function(msg) {
+		console.log('m: '+msg);
 		self.channel.send(msg);
 	}
 

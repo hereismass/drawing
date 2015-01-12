@@ -63,7 +63,7 @@ function DrawingClass(canvas){
 			endy : ey
 		};
 		self.lines.push(line);
-		self.Communication.sendMessage(JSON.stringify(self.lines));
+		self.Communication.sendMessage(JSON.stringify(line));
 		localStorage.setItem('lines', JSON.stringify(self.lines));
 	}
 
